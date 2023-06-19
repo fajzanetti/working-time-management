@@ -1,0 +1,5 @@
+# Registro/
+# 2023/
+*.csv
+*.env
+.vscode
