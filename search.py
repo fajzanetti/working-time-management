@@ -37,12 +37,12 @@ diretorio_anos = f'{dir_path}/{NOME_DIRETORIO_RAIZ}'
 diretorio_atual = f'{dir_path}/{nome_diretorio}'
 diretorio_file = f'{dir_path}/{nome_diretorio}/{mes}.csv'
 
-print('-----------------------------------------------\n')
+# print('-----------------------------------------------\n')
 
-print(f'{dir_path}/{nome_diretorio}')
-print(f'{dir_path}/{nome_arquivo}\n')
+# print(f'{dir_path}/{nome_diretorio}')
+# print(f'{dir_path}/{nome_arquivo}\n')
 
-print('-----------------------------------------------\n')
+# print('-----------------------------------------------\n')
 
 with open(nome_arquivo, 'r') as f:
     reader = csv.reader(f)
@@ -55,51 +55,59 @@ def open_directory_in_file_manager(path):
         os.system(f'explorer {path}')
 
 def fetch_day(day):
-    print(f'\nPasta: {nome_arquivo}')
+    print(f'╭─┴{str("".center(47, "─"))}╮')
+    print(f'│{str(f"Pasta: {nome_arquivo}").center(49)}│')
     for i, row in enumerate(linhas):
         if row[0] == str(day):
             hora, minuto, segundo = row[-1].split(":")
-            print(f'No dia {day}, teve um total de {hora} horas e {minuto} minutos\n')
+            print(f'│{str(f"No dia {day}, teve um total de {hora} horas e {minuto} minutos").center(49)}│')
+            print(f'╰─┬{str("".center(47, "─"))}╯')
             break
     else:
-        print(f'Dia {day} não encontrado\n')
+        print(f'│{str(f"Dia {day} não encontrado").center(49)}│')
+        print(f'╰─┬{str("".center(47, "─"))}╯')
 
 def horas_faltantes_8h():
     GLOBAL_HORA_ATUAL = datetime.now().strftime('%H:%M:%S')
+    print(f'  │')
     for i, row in enumerate(linhas):
         if row[0] == str(dia):
             if row[1] == '' and row[2] == '':
-                print('\n-----------------------------------------------\n')
-                print('Ainda abriu o PRIMEIRO ponto')
+                print(f'╭─┴{str("".center(47, "─"))}╮')
+                print(f'│{str(f"Ainda abriu o PRIMEIRO ponto").center(49)}│')
+                print(f'╰─┬{str("".center(47, "─"))}╯')
                 return
             elif row[1] != '' and row[2] == '':
-                print('\n-----------------------------------------------\n')
-                print('Ainda NÃO fechou o PRIMEIRO ponto')
+                print(f'╭─┴{str("".center(47, "─"))}╮')
+                print(f'│{str(f"Ainda NÃO fechou o PRIMEIRO ponto").center(49)}│')
+                print(f'╰─┬{str("".center(47, "─"))}╯')
                 inicio_str = row[1]
                 total_str = '00:00:01'
-                # return
             elif row[2] != '' and row[3] == '':
                 inicio_str = GLOBAL_HORA_ATUAL
                 total_str = row[-1]
-                print('\n-----------------------------------------------\n')
-                print('Ainda NÃO iniciou o SEGUNDO ponto')
-                print(f'Mas se iniciar outro agora ás {GLOBAL_HORA_ATUAL}')
+                print(f'╭─┴{str("".center(47, "─"))}╮')
+                print(f'│{str(f"Ainda NÃO iniciou o SEGUNDO ponto").center(49)}│')
+                print(f'│{str(f"Mas se iniciar outro agora ás {GLOBAL_HORA_ATUAL}").center(49)}│')
+                print(f'╰─┬{str("".center(47, "─"))}╯')
             elif row[3] != '' and row[4] == '':
                 inicio_str = row[3]
                 total_str = row[-1]
             elif row[4] != '' and row[5] == '':
-                print('\n-----------------------------------------------\n')
-                print('Ainda NÃO iniciou o TERCEIRO ponto')
-                print(f'Mas se iniciar outro agora ás {GLOBAL_HORA_ATUAL}')
+                print(f'╭─┴{str("".center(47, "─"))}╮')
+                print(f'│{str(f"Ainda NÃO iniciou o TERCEIRO ponto").center(49)}│')
+                print(f'│{str(f"Mas se iniciar outro agora ás {GLOBAL_HORA_ATUAL}").center(49)}│')
+                print(f'╰─┬{str("".center(47, "─"))}╯')
                 inicio_str = GLOBAL_HORA_ATUAL
                 total_str = row[-1]
             elif row[5] != '' and row[6] == '':
                 inicio_str = row[5]
                 total_str = row[-1]
             else:
-                print('\n-----------------------------------------------\n')
-                print('Ja bateu os três pontos')
-                print(f'E trabalhou um total de {row[-1]} hoje')
+                print(f'╭─┴{str("".center(47, "─"))}╮')
+                print(f'│{str(f"Ja bateu os três pontos").center(49)}│')
+                print(f'│{str(f"E trabalhou um total de {row[-1]} hoje").center(49)}│')
+                print(f'╰─┬{str("".center(47, "─"))}╯')
                 return
             break
 
@@ -121,75 +129,41 @@ def horas_faltantes_8h():
     # Soma o tempo restante com o intervalo entre a hora de início e a hora atual
     tempo_trabalhado_sem_ponto = timedelta(hours=tempo_total_com_ponto.hour, minutes=tempo_total_com_ponto.minute, seconds=tempo_total_com_ponto.second) + timedelta(hours=hora_atual.hour, minutes=hora_atual.minute, seconds=hora_atual.second) - timedelta(hours=tempo_ultimo_ponto_entrada.hour, minutes=tempo_ultimo_ponto_entrada.minute, seconds=tempo_ultimo_ponto_entrada.second)
     tempo_restante_sem_ponto = carga_dia_trabalho - tempo_trabalhado_sem_ponto
-
-    # print('╭──┬──╮')
-    # print('┝  │  │')
-    # print('├──┼──┤')
-    # print('╰──┴──╯')
     
-    print()
-    print(f'╭───┬───────────────────────────────────────────╮')
-    # print('│    ╭─────╮                                                   │')
-    # Formatando para "HH:MM:SS"
-    # tempo_trabalhado_sem_ponto += datetime(1, 1, 1)
-    # tempo_trabalhado_sem_ponto_formatado = tempo_trabalhado_sem_ponto.strftime('%H:%M:%S')
-
-    # tempo_restante_sem_ponto_dt = datetime(1, 1, 1) + tempo_restante_sem_ponto
-    # tempo_restante_sem_ponto_formatado = tempo_restante_sem_ponto_dt.strftime('%H:%M:%S')
-
-    # tempo_restante_com_ponto_dt = datetime(1, 1, 1) + tempo_restante_com_ponto
-    # tempo_restante_com_ponto_formatado = tempo_restante_com_ponto_dt.strftime('%H:%M:%S')
-
-    # 🟢 🔴
+    print(f'  │')
+    print(f'╭─┴{str("".center(47, "─"))}╮')
 
     if tempo_restante_sem_ponto < timedelta(0):
-        print(f'│ ╭─┴─╮                                         │')
-        print(f'│ │ ✘ ├╼ Trabalhado SEM ponto : {str(tempo_trabalhado_sem_ponto).rjust(8)}  hrs   │')
-        print(f'│ ╰─┬─╯                                         │')
-        # print(f' ✘ - Trabalhado SEM ponto : {tempo_trabalhado_sem_ponto} hrs')
+        print(f'│ ╭───╮{str("".center(43))}│')
+        print(f'├─┤ ✘ ├╼ Trabalhado SEM ponto : {str(tempo_trabalhado_sem_ponto).center(8)}  hrs     │')
+        print(f'│ ╰───╯{str("".center(43))}│')
     else:
-        print(f'│ ╭─┴─╮                                         │')
-        print(f'│ │ ✘ ├╼ Trabalhado SEM ponto : {str(tempo_trabalhado_sem_ponto).rjust(8)}  hrs   │')
-        print(f'│ │ ✘ ├╼ Restante   SEM ponto : {str(tempo_restante_sem_ponto).rjust(8)}  hrs   │')
-        print(f'│ ╰─┬─╯                                         │')
-        # print(f' ✘ - Trabalhado SEM ponto : {tempo_trabalhado_sem_ponto} hrs')
-        # print(f' ✘ - Restante   SEM ponto : {tempo_restante_sem_ponto} hrs')
+        print(f'│ ╭───╮{str("".center(43))}│')
+        print(f'├─┤ ✘ ├╼ Trabalhado SEM ponto : {str(tempo_trabalhado_sem_ponto).center(8)}  hrs     │')
+        print(f'├─┤ ✘ ├╼ Restante   SEM ponto : {str(tempo_restante_sem_ponto).center(8)}  hrs     │')
+        print(f'│ ╰─┬─╯{str("".center(43))}│')
     
 
     if tempo_restante_com_ponto < timedelta(0):
-        print(f'│ ╭─┴─╮                                         │')
-        print(f'│ │ ✔ ├╼ Trabalhado COM ponto : {str(tempo_total_com_ponto).rjust(8)}  hrs   │')
-        print(f'│ ╰─┬─╯                                         │')
-        print(f'╰───┴───────────────────────────────────────────╯')
-        # print(f' ✔ - Trabalhado COM ponto : {tempo_total_com_ponto} hrs')
+        print(f'│ ╭───╮{str("".center(43))}│')
+        print(f'├─┤ ✔ ├╼ Trabalhado COM ponto : {str(tempo_total_com_ponto).center(8)}  hrs     │')
+        print(f'│ ╰───╯{str("".center(43))}│')
+        print(f'╰─┬────{str("".center(43, "─"))}╯')
     else:
-        print(f'│ ╭─┴─╮                                         │')
-        print(f'│ │ ✔ ├╼ Trabalhado COM ponto : {str(tempo_total_com_ponto).rjust(8)}  hrs   │')
-        print(f'│ │ ✔ ├╼ Restante   COM ponto : {str(tempo_restante_com_ponto).rjust(8)}  hrs   │')
-        print(f'│ ╰─┬─╯                                         │')
-        # print(f' ✔ - Trabalhado COM ponto : {tempo_total_com_ponto} hrs')
-        # print(f' ✔ - Restante   COM ponto : {tempo_restante_com_ponto} hrs')
-        # print('\n-----------------------------------------------\n')
         fim = tempo_ultimo_ponto_entrada + tempo_restante_com_ponto
-        print(f'│   ╰────────────────────────────────────╮      │')
-        print(f'│                                  ╭─────┴────╮ │')
-        print(f'│    Deve fechar o ponto as ╾──────┤ {str(fim.time().strftime("%H:%M:%S")).rjust(8)} │ │')
-        print(f'│ Finalizar o dia com {str(carga_dia_trabalho).rjust(8)} Hrs ╰─────┬────╯ │')
-        # print(f'│    Para finalizar o dia com  {carga_dia_trabalho}         │')
-        # print(f'│    Para finalizar o dia com ╾────┤ {carga_dia_trabalho}  │ │')
-        # print(f'│                                  ╰─────┬────╯ │')
-        print(f'╰────────────────────────────────────────┴──────╯')
-
-        # Soma o tempo restante com a hora de início
-
-        # Formata o resultado para exibir somente a hora, sem a data
-
-        # print(f'Deve fechar o ponto as {fim.time().strftime("%H:%M:%S")}')
-        # print(f'Para finalizar o dia com {carga_dia_trabalho} horas\n')
-        # print('-----------------------------------------------')
+        print(f'│ ╭───╮{str("".center(43))}│')
+        print(f'├─┤ ✔ ├╼ Trabalhado COM ponto : {str(tempo_total_com_ponto).center(8)}  hrs     │')
+        print(f'├─┤ ✔ ├╼ Restante   COM ponto : {str(tempo_restante_com_ponto).center(8)}  hrs     │')
+        print(f'│ ╰─┬─╯{str("".center(43))}│')
+        print(f'│   ╰──────────────────────────────────────╮      │')
+        print(f'│                                    ╭─────┴────╮ │')
+        print(f'│     Deve fechar o ponto as ╾───────┤ {str(fim.time().strftime("%H:%M:%S")).center(8)} │ │')
+        print(f'│  Finalizar o dia com {str(carga_dia_trabalho).center(8)} Hrs  ╰─────┬────╯ │')
+        print(f'╰─┬────────────────────────────────────────┴──────╯')
 
 def calcular_total_horas(data_atual):
-    print('\n-----------------------------------------------\n')
+    print(f'╭─┴{str("".center(47, "─"))}╮')
+    arquivo_não_encontrado = False
     total_horas = timedelta()
 
     if data_atual.day > FIRST_WORKING_DAY_OF_THE_MONTH:
@@ -232,7 +206,10 @@ def calcular_total_horas(data_atual):
                     total_horas += timedelta(hours=total_dia.hour, minutes=total_dia.minute, seconds=total_dia.second)
             
         except FileNotFoundError:
-            print(f"Arquivo {nome_arquivo} não encontrado.")
+            arquivo_não_encontrado = True
+            print(f'│{str(f"✘ Arquivo {nome_arquivo} não encontrado.".center(49))}│')
+    
+        # print(f'│{str(f"Arquivo {nome_arquivo} não encontrado.".center(49))}│')✘ ✔
     
     # Exemplo de uso
     total = total_horas
@@ -241,20 +218,33 @@ def calcular_total_horas(data_atual):
     total_a_receber = total_em_horas * VALUE_PER_HOUR
 
     if(total_em_horas == 0):
+        print(f'╰─┬{str("".center(47, "─"))}╯')
         return
 
+    if(arquivo_não_encontrado):
+        print(f'│{str("".center(49))}│')
+
     # Exibir a quantidade total de horas como número decimal
-    print(f"Total de horas (decimal): {total_em_horas}")
+    print(f'│{str("".center(32))}╭─────────────╮  │')
+    print(f'│{str(f" Total de horas  ╾".ljust(32, "─"))}┾ {str(f"{total_em_horas:.2f} Hrs").ljust(11)} │  │')
+    print(f'│{str("".center(32))}├─────────────┤  │')
     if(total_em_horas < 160):
         total_horas_faltante = 160 - total_em_horas
-        print(f"Para completar as 160 hora falta (decimal): {total_horas_faltante:.2f}")
-    print(f"Total aproximado a receber R$:{total_a_receber:.2f}")
+        print(f'│{str(f" Carga horaria restante ╾".ljust(32, "─"))}┾ {str(f"{total_horas_faltante:.2f} Hrs").ljust(11)} │  │')
+        print(f'│{str("".center(32))}├─────────────┤  │')
+
+    print(f'│{str(f" Total aproximado a receber ╾".ljust(32, "─"))}┾ {str(f"R$: {total_a_receber:.2f}").ljust(11)} │  │')
+    print(f'│{str("".center(32))}╰─────────────╯  │')
 
     # Exibir a quantidade total de horas no formato dias, horas e minutos
     dias = total.days
     horas, resto = divmod(total.seconds, 3600)
     minutos = resto // 60
-    print(f"Total de horas (formato dias, horas e minutos): {dias} dia(s), {horas} hora(s) e {minutos} minuto(s)")
+
+    print(f'│{str("".center(49))}│')
+    print(f'│{str(f" Total de horas (formato dias, horas e minutos)".center(49))}│')
+    print(f'│{str(f" {dias} dia(s), {horas} hora(s) e {minutos} minuto(s)".center(49))}│')
+    print(f'╰─┬{str("".center(47, "─"))}╯')
 
 executar_novamente = ''
 
@@ -266,32 +256,38 @@ while True:
     print(f'┃ 4 ╉╼ Para calcular qual horario de saida para um total de 8h')
     print(f'┃ 5 ╉╼ Somar as horas do mês de trabalho')
     print(f'┃ 6 ╉╼ Somar as horas do mês atual')
-    print(f'┗━━━┛')
-    print(f'┏━━━━━━┓')
+    print(f'┗━┯━┛')
+    print(f'┏━┷━━━━┓')
     print(f'┃  01  ╉╼ Para print do DIA especifico no MÊS atual')
     print(f'┃ 2020 ╉╼ Para pasta do ANO ESPECIFICO')
-    print(f'┗━━━━━━┛')
-    print(f'┏━━━┓')
+    print(f'┗━┯━━━━┛')
+    print(f'┏━┷━┓')
     print(f'┃ 0 ╉╼ Para terminar')
-    print(f'┗━━━┛')
+    print(f'┗━┯━┛')
 
     if executar_novamente != '0':
         option = executar_novamente
-    else:
-        option = input("Opção: ").lower()
 
     if option == '0':
         break
     elif option == '1':
-        print(f'\nAbrindo: {dir_path}')
+        print(f'╭─┴{str("".center(47, "─"))}╮')
+        print(f'│{str(f"Abrindo: {dir_path}").center(49)}│')
+        print(f'╰{str("".center(49, "─"))}╯')
+
         open_directory_in_file_manager(dir_path)
         break
     elif option == '2':
-        print()
         dataframe = pd.read_csv(diretorio_file)
+
+        print(f'╭─┴{str("".center(71, "─"))}╮')
         print(dataframe.to_string(index=False, header=True, na_rep='  :  :  ', justify='center'))
+        print(f'╰─┬{str("".center(71, "─"))}╯')
     elif option == '3':
-        print(f'\nAbrindo: {diretorio_atual}')
+        print(f'╭─┴{str("".center(47, "─"))}╮')
+        print(f'│{str(f"Abrindo: {diretorio_atual}").center(49)}│')
+        print(f'╰{str("".center(49, "─"))}╯')
+
         open_directory_in_file_manager(diretorio_atual)
         break
     elif option == '4':
@@ -299,30 +295,44 @@ while True:
     elif option == '5':
         calcular_total_horas(data_atual)
     elif option == '6':
-        print('\n-----------------------------------------------\n')
          # Obter a data especifica
-        data_atual_string = input("Data (MM/AAAA): ")
-        data_especifica = datetime.strptime("01/" + data_atual_string, "%d/%m/%Y").date()
+        while True:
+            print(f'  │')
+            data_atual_string = input("  ├──╼ Data (MM/AAAA): ")
+            try:
+                data_especifica = datetime.strptime("01/" + data_atual_string, "%d/%m/%Y").date()
+                break
+            except ValueError:
+                print("  ├──╼ Formato de data inválido. Certifique-se de usar o formato MM/AAAA.")
+        # data_especifica = datetime.strptime("01/" + data_atual_string, "%d/%m/%Y").date()
         calcular_total_horas(data_especifica)
     elif option.isdigit() and len(option) == 2:
         fetch_day(option)
     elif option.isdigit() and len(option) == 4:
         diretorio_espc_ano = f'{diretorio_anos}/{option}'
-        print(f'\nAbrindo: {diretorio_espc_ano}')
+
+        print(f'╭─┴{str("".center(47, "─"))}╮')
+        print(f'│{str(f"Abrindo: {diretorio_espc_ano}").center(49)}│')
         if os.path.isdir(diretorio_espc_ano):
             open_directory_in_file_manager(diretorio_espc_ano)
+            print(f'╰──{str("".center(47, "─"))}╯')
             break
-        print(f'Essa pasta não existe\n')
+
+        # print(f'╭─┴{str("".center(47, "─"))}╮')
+        print(f'│{str(f"Pasta não existe: {diretorio_espc_ano}").center(49)}│')
+        print(f'╰─┬{str("".center(47, "─"))}╯')
+        # print(f'Essa pasta não existe\n')
     else:
         # teste = data_atual.month
         # print(teste)
         pass
 
     # Pergunta se o usuário quer executar o código novamente
-    executar_novamente = input('\nOpção: ').lower()
+    executar_novamente = input("  ╰──╼ Opção: ").lower()
 
     # Se a resposta for 'n' ou 'não', encerra o loop e o programa
     if executar_novamente in ['n', 'não', 'nao', '0']:
         break
     else:
         os.system('clear')
+

@@ -31,16 +31,22 @@ if not os.path.isdir(nome_diretorio):
 # criar o nome do arquivo csv correspondente a este mês
 nome_arquivo = f'{nome_diretorio}/{mes}.csv'
 
-print('-----------------------------------------------\n')
-print(f'{dir_path}/{nome_diretorio}')
-print(f'{dir_path}/{nome_arquivo}\n')
+diretorio_completo = f'{dir_path}/{nome_arquivo}'
+print(f'╭─────────────────────────────────────────────────╮')
+print(f'│{str(diretorio_completo).center(49)}│')        # │
+print(f'╰────────────────────────┬────────────────────────╯')
+print(f'                         │                         ')
+
 
 # verificar se o arquivo já existe
 if not os.path.isfile(nome_arquivo):
     # se o arquivo não existir, criá-lo e adicionar o cabeçalho
     with open(nome_arquivo, 'w') as f:
         f.write(f'{HEADER_CSV}')
-        print('Novo arquivo criado.\n')
+        print(f'╭────────────────────────┴────────────────────────╮')
+        print(f'│{str("Novo arquivo criado.").center(49)}│')   #  │
+        print(f'╰────────────────────────┬────────────────────────╯')
+        print(f'                         │                         ')
 
 # verificar se a linha correspondente ao dia atual já existe no arquivo
 with open(nome_arquivo, 'r') as f:
@@ -55,10 +61,14 @@ with open(nome_arquivo, 'r') as f:
                 row[primeiro_vazio] = hora_atual
                 # row[primeiro_vazio] = '14:00:00'
                 linhas[i] = row
-                print(f'{linhas[0][primeiro_vazio]}: {hora_atual}')
+                print(f'┏━━━━━━━━━━━━━━━━━━━━━━━━┷━━━━━━━━━━━━━━━━━━━━━━━━┓')
+                print(f'┃{str(f"{linhas[0][primeiro_vazio]}: {hora_atual}").center(49)}┃')
+                print(f'┗━━━━━━━━━━━━━━━━━━━━━━━━┯━━━━━━━━━━━━━━━━━━━━━━━━┛')
 
             else:
-                print('Já registrou todos os pontos possíveis do dia.\n')
+                print(f'┏━━━━━━━━━━━━━━━━━━━━━━━━┷━━━━━━━━━━━━━━━━━━━━━━━━┓')
+                print(f'┃{str("Já registrou todos os pontos possíveis do dia.").center(49)}┃')
+                print(f'┗━━━━━━━━━━━━━━━━━━━━━━━━┯━━━━━━━━━━━━━━━━━━━━━━━━┛')
             break
     else:
         # a linha não existe, adicioná-la ao arquivo
@@ -84,7 +94,14 @@ for row in linhas:
 
 # adicionar o total do dia à última coluna
 linhas[-1][-1] = str(total)
-print(f'Total do dia: {total}\n')
+
+print(f'╔════════════════════════╧════════════════════════╗')
+print(f'║                          ╭─────────╮            ║')
+print(f'║{str(f"Total do dia: │ {str(total).center(8)}│").center(49)}║')
+print(f'║                          ╰─────────╯            ║')
+print(f'╚════════════════════════╤════════════════════════╝')
+print(f'                         │                         ')
+print(f'  ╭──────────────────────╯                         ')
 
 # escrever as linhas atualizadas de volta ao arquivo
 with open(nome_arquivo, 'w', newline='') as f:
@@ -92,14 +109,13 @@ with open(nome_arquivo, 'w', newline='') as f:
     writer.writerows(linhas)
 
 
-print('-----------------------------------------------')
-
-print(f'┏━━━┓')
+print(f'┏━┷━┓')
 print(f'┃ 1 ╉╼ Executar busca')
 print(f'┃ 0 ╉╼ Fechar')
-print(f'┗━━━┛')
+print(f'┗━┯━┛')
 
-busca = input("Buscar: ").lower()
+busca = input(f'  ╰──╼ Buscar: ').lower()
 
 if busca in ['1']:
+    os.system('clear')
     os.system('python3 search.py')
