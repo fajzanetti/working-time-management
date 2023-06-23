@@ -141,7 +141,7 @@ def horas_faltantes_8h():
         print(f'│ ╭───╮{str("".center(43))}│')
         print(f'├─┤ ✘ ├╼ Trabalhado SEM ponto : {str(tempo_trabalhado_sem_ponto).center(8)}  hrs     │')
         print(f'├─┤ ✘ ├╼ Restante   SEM ponto : {str(tempo_restante_sem_ponto).center(8)}  hrs     │')
-        print(f'│ ╰─┬─╯{str("".center(43))}│')
+        print(f'│ ╰───╯{str("".center(43))}│')
     
 
     if tempo_restante_com_ponto < timedelta(0):
@@ -208,8 +208,6 @@ def calcular_total_horas(data_atual):
         except FileNotFoundError:
             arquivo_não_encontrado = True
             print(f'│{str(f"✘ Arquivo {nome_arquivo} não encontrado.".center(49))}│')
-    
-        # print(f'│{str(f"Arquivo {nome_arquivo} não encontrado.".center(49))}│')✘ ✔
     
     # Exemplo de uso
     total = total_horas
@@ -304,7 +302,6 @@ while True:
                 break
             except ValueError:
                 print("  ├──╼ Formato de data inválido. Certifique-se de usar o formato MM/AAAA.")
-        # data_especifica = datetime.strptime("01/" + data_atual_string, "%d/%m/%Y").date()
         calcular_total_horas(data_especifica)
     elif option.isdigit() and len(option) == 2:
         fetch_day(option)
@@ -318,13 +315,9 @@ while True:
             print(f'╰──{str("".center(47, "─"))}╯')
             break
 
-        # print(f'╭─┴{str("".center(47, "─"))}╮')
         print(f'│{str(f"Pasta não existe: {diretorio_espc_ano}").center(49)}│')
         print(f'╰─┬{str("".center(47, "─"))}╯')
-        # print(f'Essa pasta não existe\n')
     else:
-        # teste = data_atual.month
-        # print(teste)
         pass
 
     # Pergunta se o usuário quer executar o código novamente
