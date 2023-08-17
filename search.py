@@ -1,12 +1,23 @@
+
+# ! ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+# ! ┃                                 IMPORTS                                  ┃
+# ! ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
 import os
 import csv
+import subprocess
 import pandas as pd
 
 from dotenv import load_dotenv
 from datetime import datetime, time, timedelta
 from dateutil.relativedelta import relativedelta
 
-# Carrega as variáveis de ambiente do arquivo .env
+
+# ! ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+# ! ┃                              GLOBAL VAR`s                                ┃
+# ! ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+# * Carrega as variáveis de ambiente do arquivo .env
 load_dotenv()
 
 NOME_DIRETORIO_RAIZ = str(os.getenv('NOME_DIRETORIO_RAIZ'))
@@ -37,129 +48,39 @@ diretorio_anos = f'{dir_path}/{NOME_DIRETORIO_RAIZ}'
 diretorio_atual = f'{dir_path}/{nome_diretorio}'
 diretorio_file = f'{dir_path}/{nome_diretorio}/{mes}.csv'
 
-# print('-----------------------------------------------\n')
+executar_novamente = ''
 
-# print(f'{dir_path}/{nome_diretorio}')
-# print(f'{dir_path}/{nome_arquivo}\n')
-
-# print('-----------------------------------------------\n')
+meses_extenso = {
+    1: "janeiro",
+    2: "fevereiro",
+    3: "março",
+    4: "abril",
+    5: "maio",
+    6: "junho",
+    7: "julho",
+    8: "agosto",
+    9: "setembro",
+    10: "outubro",
+    11: "novembro",
+    12: "dezembro"
+}
 
 with open(nome_arquivo, 'r') as f:
     reader = csv.reader(f)
     linhas = list(reader)
+
+# ! ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+# ! ┃                            GENERAL FUNCTIONS                             ┃
+# ! ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+def send_notification(title, message):
+    subprocess.run(["notify-send", title, message])
 
 def open_directory_in_file_manager(path):
     if os.name == 'posix': # Verifica se o sistema operacional é Unix-based (Linux, macOS, etc.)
         os.system(f'xdg-open {path}')
     elif os.name == 'nt': # Verifica se o sistema operacional é Windows
         os.system(f'explorer {path}')
-
-def fetch_day(day):
-    print(f'╭─┴{str("".center(47, "─"))}╮')
-    print(f'│{str(f"Pasta: {nome_arquivo}").center(49)}│')
-    for i, row in enumerate(linhas):
-        if row[0] == str(day):
-            hora, minuto, segundo = row[-1].split(":")
-            print(f'│{str(f"No dia {day}, teve um total de {hora} horas e {minuto} minutos").center(49)}│')
-            print(f'╰─┬{str("".center(47, "─"))}╯')
-            break
-    else:
-        print(f'│{str(f"Dia {day} não encontrado").center(49)}│')
-        print(f'╰─┬{str("".center(47, "─"))}╯')
-
-def horas_faltantes_8h():
-    GLOBAL_HORA_ATUAL = datetime.now().strftime('%H:%M:%S')
-    print(f'  │')
-    for i, row in enumerate(linhas):
-        if row[0] == str(dia):
-            if row[1] == '' and row[2] == '':
-                print(f'╭─┴{str("".center(47, "─"))}╮')
-                print(f'│{str(f"Ainda abriu o PRIMEIRO ponto").center(49)}│')
-                print(f'╰─┬{str("".center(47, "─"))}╯')
-                return
-            elif row[1] != '' and row[2] == '':
-                print(f'╭─┴{str("".center(47, "─"))}╮')
-                print(f'│{str(f"Ainda NÃO fechou o PRIMEIRO ponto").center(49)}│')
-                print(f'╰─┬{str("".center(47, "─"))}╯')
-                inicio_str = row[1]
-                total_str = '00:00:01'
-            elif row[2] != '' and row[3] == '':
-                inicio_str = GLOBAL_HORA_ATUAL
-                total_str = row[-1]
-                print(f'╭─┴{str("".center(47, "─"))}╮')
-                print(f'│{str(f"Ainda NÃO iniciou o SEGUNDO ponto").center(49)}│')
-                print(f'│{str(f"Mas se iniciar outro agora ás {GLOBAL_HORA_ATUAL}").center(49)}│')
-                print(f'╰─┬{str("".center(47, "─"))}╯')
-            elif row[3] != '' and row[4] == '':
-                inicio_str = row[3]
-                total_str = row[-1]
-            elif row[4] != '' and row[5] == '':
-                print(f'╭─┴{str("".center(47, "─"))}╮')
-                print(f'│{str(f"Ainda NÃO iniciou o TERCEIRO ponto").center(49)}│')
-                print(f'│{str(f"Mas se iniciar outro agora ás {GLOBAL_HORA_ATUAL}").center(49)}│')
-                print(f'╰─┬{str("".center(47, "─"))}╯')
-                inicio_str = GLOBAL_HORA_ATUAL
-                total_str = row[-1]
-            elif row[5] != '' and row[6] == '':
-                inicio_str = row[5]
-                total_str = row[-1]
-            else:
-                print(f'╭─┴{str("".center(47, "─"))}╮')
-                print(f'│{str(f"Ja bateu os três pontos").center(49)}│')
-                print(f'│{str(f"E trabalhou um total de {row[-1]} hoje").center(49)}│')
-                print(f'╰─┬{str("".center(47, "─"))}╯')
-                return
-            break
-
-    # Hora total no formato "HH:MM:SS"
-    tempo_total_com_ponto = datetime.strptime(total_str, '%H:%M:%S').time()
-
-    # Hora total no formato "HH:MM:SS"
-    hora_atual = datetime.strptime(GLOBAL_HORA_ATUAL, '%H:%M:%S').time()
-
-    # Hora de início no formato "HH:MM:SS"
-    tempo_ultimo_ponto_entrada = datetime.strptime(inicio_str, '%H:%M:%S')
-
-    # Duração de 8 horas em um objeto timedelta
-    carga_dia_trabalho = timedelta(hours=8)
-
-    # Subtrai o tempo total da duração de 8 horas
-    tempo_restante_com_ponto = carga_dia_trabalho - timedelta(hours=tempo_total_com_ponto.hour, minutes=tempo_total_com_ponto.minute, seconds=tempo_total_com_ponto.second)
-    
-    # Soma o tempo restante com o intervalo entre a hora de início e a hora atual
-    tempo_trabalhado_sem_ponto = timedelta(hours=tempo_total_com_ponto.hour, minutes=tempo_total_com_ponto.minute, seconds=tempo_total_com_ponto.second) + timedelta(hours=hora_atual.hour, minutes=hora_atual.minute, seconds=hora_atual.second) - timedelta(hours=tempo_ultimo_ponto_entrada.hour, minutes=tempo_ultimo_ponto_entrada.minute, seconds=tempo_ultimo_ponto_entrada.second)
-    tempo_restante_sem_ponto = carga_dia_trabalho - tempo_trabalhado_sem_ponto
-    
-    print(f'  │')
-    print(f'╭─┴{str("".center(47, "─"))}╮')
-
-    if tempo_restante_sem_ponto < timedelta(0):
-        print(f'│ ╭───╮{str("".center(43))}│')
-        print(f'├─┤ ✘ ├╼ Trabalhado SEM ponto : {str(tempo_trabalhado_sem_ponto).center(8)}  hrs     │')
-        print(f'│ ╰───╯{str("".center(43))}│')
-    else:
-        print(f'│ ╭───╮{str("".center(43))}│')
-        print(f'├─┤ ✘ ├╼ Trabalhado SEM ponto : {str(tempo_trabalhado_sem_ponto).center(8)}  hrs     │')
-        print(f'├─┤ ✘ ├╼ Restante   SEM ponto : {str(tempo_restante_sem_ponto).center(8)}  hrs     │')
-        print(f'│ ╰───╯{str("".center(43))}│')
-    
-
-    if tempo_restante_com_ponto < timedelta(0):
-        print(f'│ ╭───╮{str("".center(43))}│')
-        print(f'├─┤ ✔ ├╼ Trabalhado COM ponto : {str(tempo_total_com_ponto).center(8)}  hrs     │')
-        print(f'│ ╰───╯{str("".center(43))}│')
-        print(f'╰─┬────{str("".center(43, "─"))}╯')
-    else:
-        fim = tempo_ultimo_ponto_entrada + tempo_restante_com_ponto
-        print(f'│ ╭───╮{str("".center(43))}│')
-        print(f'├─┤ ✔ ├╼ Trabalhado COM ponto : {str(tempo_total_com_ponto).center(8)}  hrs     │')
-        print(f'├─┤ ✔ ├╼ Restante   COM ponto : {str(tempo_restante_com_ponto).center(8)}  hrs     │')
-        print(f'│ ╰─┬─╯{str("".center(43))}│')
-        print(f'│   ╰──────────────────────────────────────╮      │')
-        print(f'│                                    ╭─────┴────╮ │')
-        print(f'│     Deve fechar o ponto as ╾───────┤ {str(fim.time().strftime("%H:%M:%S")).center(8)} │ │')
-        print(f'│  Finalizar o dia com {str(carga_dia_trabalho).center(8)} Hrs  ╰─────┬────╯ │')
-        print(f'╰─┬────────────────────────────────────────┴──────╯')
 
 def calcular_total_horas(data_atual):
     print(f'╭─┴{str("".center(47, "─"))}╮')
@@ -243,12 +164,182 @@ def calcular_total_horas(data_atual):
     print(f'│{str(f" Total de horas (formato dias, horas e minutos)".center(49))}│')
     print(f'│{str(f" {dias} dia(s), {horas} hora(s) e {minutos} minuto(s)".center(49))}│')
     print(f'╰─┬{str("".center(47, "─"))}╯')
+    send_notification(f"Total de horas: {total_em_horas:.2f} Hrs", f"No mês de {meses_extenso[mes_atual]}, {ano_atual}")
 
-executar_novamente = ''
+# ! ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+# ! ┃                              MENU FUNCTIONS                              ┃
+# ! ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+def option_1():
+    print(f'╭─┴{str("".center(47, "─"))}╮')
+    print(f'│{str(f"Abrindo: {dir_path}").center(49)}│')
+    print(f'╰─┬{str("".center(47, "─"))}╯')
+
+    subprocess.run(["code", dir_path])
+    send_notification("Abrindo VS Code", dir_path)
+
+def option_2():
+    dataframe = pd.read_csv(diretorio_file)
+
+    print(f'╭─┴{str("".center(71, "─"))}╮')
+    print(dataframe.to_string(index=False, header=True, na_rep='  :  :  ', justify='center'))
+    print(f'╰─┬{str("".center(71, "─"))}╯')
+
+def option_3():
+    print(f'╭─┴{str("".center(47, "─"))}╮')
+    print(f'│{str(f"Abrindo: {diretorio_atual}").center(49)}│')
+    print(f'╰─┬{str("".center(47, "─"))}╯')
+
+    open_directory_in_file_manager(diretorio_atual)
+
+def option_4():
+    GLOBAL_HORA_ATUAL = datetime.now().strftime('%H:%M:%S')
+    print(f'  │')
+    for i, row in enumerate(linhas):
+        if row[0] == str(dia):
+            if row[1] == '' and row[2] == '':
+                print(f'╭─┴{str("".center(47, "─"))}╮')
+                print(f'│{str(f"Ainda abriu o PRIMEIRO ponto").center(49)}│')
+                print(f'╰─┬{str("".center(47, "─"))}╯')
+                return
+            elif row[1] != '' and row[2] == '':
+                print(f'╭─┴{str("".center(47, "─"))}╮')
+                print(f'│{str(f"Ainda NÃO fechou o PRIMEIRO ponto").center(49)}│')
+                print(f'╰─┬{str("".center(47, "─"))}╯')
+                inicio_str = row[1]
+                total_str = '00:00:01'
+            elif row[2] != '' and row[3] == '':
+                inicio_str = GLOBAL_HORA_ATUAL
+                total_str = row[-1]
+                print(f'╭─┴{str("".center(47, "─"))}╮')
+                print(f'│{str(f"Ainda NÃO iniciou o SEGUNDO ponto").center(49)}│')
+                print(f'│{str(f"Mas se iniciar outro agora ás {GLOBAL_HORA_ATUAL}").center(49)}│')
+                print(f'╰─┬{str("".center(47, "─"))}╯')
+            elif row[3] != '' and row[4] == '':
+                inicio_str = row[3]
+                total_str = row[-1]
+            elif row[4] != '' and row[5] == '':
+                print(f'╭─┴{str("".center(47, "─"))}╮')
+                print(f'│{str(f"Ainda NÃO iniciou o TERCEIRO ponto").center(49)}│')
+                print(f'│{str(f"Mas se iniciar outro agora ás {GLOBAL_HORA_ATUAL}").center(49)}│')
+                print(f'╰─┬{str("".center(47, "─"))}╯')
+                inicio_str = GLOBAL_HORA_ATUAL
+                total_str = row[-1]
+            elif row[5] != '' and row[6] == '':
+                inicio_str = row[5]
+                total_str = row[-1]
+            else:
+                print(f'╭─┴{str("".center(47, "─"))}╮')
+                print(f'│{str(f"Ja bateu os três pontos").center(49)}│')
+                print(f'│{str(f"E trabalhou um total de {row[-1]} hoje").center(49)}│')
+                print(f'╰─┬{str("".center(47, "─"))}╯')
+                return
+            break
+
+    # Hora total no formato "HH:MM:SS"
+    tempo_total_com_ponto = datetime.strptime(total_str, '%H:%M:%S').time()
+
+    # Hora total no formato "HH:MM:SS"
+    hora_atual = datetime.strptime(GLOBAL_HORA_ATUAL, '%H:%M:%S').time()
+
+    # Hora de início no formato "HH:MM:SS"
+    tempo_ultimo_ponto_entrada = datetime.strptime(inicio_str, '%H:%M:%S')
+
+    # Duração de 8 horas em um objeto timedelta
+    carga_dia_trabalho = timedelta(hours=8)
+
+    # Subtrai o tempo total da duração de 8 horas
+    tempo_restante_com_ponto = carga_dia_trabalho - timedelta(hours=tempo_total_com_ponto.hour, minutes=tempo_total_com_ponto.minute, seconds=tempo_total_com_ponto.second)
+    
+    # Soma o tempo restante com o intervalo entre a hora de início e a hora atual
+    tempo_trabalhado_sem_ponto = timedelta(hours=tempo_total_com_ponto.hour, minutes=tempo_total_com_ponto.minute, seconds=tempo_total_com_ponto.second) + timedelta(hours=hora_atual.hour, minutes=hora_atual.minute, seconds=hora_atual.second) - timedelta(hours=tempo_ultimo_ponto_entrada.hour, minutes=tempo_ultimo_ponto_entrada.minute, seconds=tempo_ultimo_ponto_entrada.second)
+    tempo_restante_sem_ponto = carga_dia_trabalho - tempo_trabalhado_sem_ponto
+    
+    print(f'  │')
+    print(f'╭─┴{str("".center(47, "─"))}╮')
+
+    if tempo_restante_sem_ponto < timedelta(0):
+        print(f'│ ╭───╮{str("".center(43))}│')
+        print(f'├─┤ ✘ ├╼ Trabalhado SEM ponto : {str(tempo_trabalhado_sem_ponto).center(8)}  hrs     │')
+        print(f'│ ╰───╯{str("".center(43))}│')
+    else:
+        print(f'│ ╭───╮{str("".center(43))}│')
+        print(f'├─┤ ✘ ├╼ Trabalhado SEM ponto : {str(tempo_trabalhado_sem_ponto).center(8)}  hrs     │')
+        print(f'├─┤ ✘ ├╼ Restante   SEM ponto : {str(tempo_restante_sem_ponto).center(8)}  hrs     │')
+        print(f'│ ╰───╯{str("".center(43))}│')
+    
+
+    if tempo_restante_com_ponto < timedelta(0):
+        print(f'│ ╭───╮{str("".center(43))}│')
+        print(f'├─┤ ✔ ├╼ Trabalhado COM ponto : {str(tempo_total_com_ponto).center(8)}  hrs     │')
+        print(f'│ ╰───╯{str("".center(43))}│')
+        print(f'╰─┬────{str("".center(43, "─"))}╯')
+        send_notification(f"Hoje ja trabalho um total de", f"{tempo_total_com_ponto} hrs")
+    else:
+        fim = tempo_ultimo_ponto_entrada + tempo_restante_com_ponto
+        print(f'│ ╭───╮{str("".center(43))}│')
+        print(f'├─┤ ✔ ├╼ Trabalhado COM ponto : {str(tempo_total_com_ponto).center(8)}  hrs     │')
+        print(f'├─┤ ✔ ├╼ Restante   COM ponto : {str(tempo_restante_com_ponto).center(8)}  hrs     │')
+        print(f'│ ╰─┬─╯{str("".center(43))}│')
+        print(f'│   ╰──────────────────────────────────────╮      │')
+        print(f'│                                    ╭─────┴────╮ │')
+        print(f'│     Deve fechar o ponto as ╾───────┤ {str(fim.time().strftime("%H:%M:%S")).center(8)} │ │')
+        print(f'│  Finalizar o dia com {str(carga_dia_trabalho).center(8)} Hrs  ╰─────┬────╯ │')
+        print(f'╰─┬────────────────────────────────────────┴──────╯')
+        send_notification(f"Para finalizar o dia falta {tempo_restante_com_ponto} hrs", f"Deve fechar o ponto as {fim.time()} hrs")
+
+def option_5():
+    calcular_total_horas(data_atual)
+
+def option_6():
+    # Obter a data especifica
+    while True:
+        print(f'  │')
+        data_atual_string = input("  ├──╼ Data (MM/AAAA): ")
+        try:
+            data_especifica = datetime.strptime("01/" + data_atual_string, "%d/%m/%Y").date()
+            break
+        except ValueError:
+            print("  ├──╼ Formato de data inválido. Certifique-se de usar o formato MM/AAAA.")
+    calcular_total_horas(data_especifica)
+
+def option_day(day):
+    print(f'╭─┴{str("".center(47, "─"))}╮')
+    print(f'│{str(f"Pasta: {nome_arquivo}").center(49)}│')
+    for i, row in enumerate(linhas):
+        if row[0] == str(day):
+            hora, minuto, segundo = row[-1].split(":")
+            print(f'│{str(f"No dia {day}, teve um total de {hora} horas e {minuto} minutos").center(49)}│')
+            print(f'╰─┬{str("".center(47, "─"))}╯')
+            break
+    else:
+        print(f'│{str(f"Dia {day} não encontrado").center(49)}│')
+        print(f'╰─┬{str("".center(47, "─"))}╯')
+
+def option_year(year):
+    diretorio_espc_ano = f'{diretorio_anos}/{option}'
+
+    print(f'╭─┴{str("".center(47, "─"))}╮')
+    print(f'│{str(f"Abrindo: {diretorio_espc_ano}").center(49)}│')
+    if os.path.isdir(diretorio_espc_ano):
+        open_directory_in_file_manager(diretorio_espc_ano)
+        print(f'╰──{str("".center(47, "─"))}╯')
+
+    print(f'│{str(f"Pasta não existe: {diretorio_espc_ano}").center(49)}│')
+    print(f'╰─┬{str("".center(47, "─"))}╯')
+
+options_functions = {
+    '1': option_1,
+    '2': option_2,
+    '3': option_3,
+    '4': option_4,
+    '5': option_5,
+    '6': option_6
+}
 
 while True:
     print(f'┏━━━┓')
-    print(f'┃ 1 ╉╼ Para pasta raiz')
+    print(f'┃ 1 ╉╼ Abrir projeto no VS Code')
     print(f'┃ 2 ╉╼ Para print o {nome_arquivo}')
     print(f'┃ 3 ╉╼ Para pasta do ANO ATUAL')
     print(f'┃ 4 ╉╼ Para calcular qual horario de saida para um total de 8h')
@@ -266,57 +357,12 @@ while True:
     if executar_novamente != '0':
         option = executar_novamente
 
-    if option == '0':
-        break
-    elif option == '1':
-        print(f'╭─┴{str("".center(47, "─"))}╮')
-        print(f'│{str(f"Abrindo: {dir_path}").center(49)}│')
-        print(f'╰{str("".center(49, "─"))}╯')
-
-        open_directory_in_file_manager(dir_path)
-        break
-    elif option == '2':
-        dataframe = pd.read_csv(diretorio_file)
-
-        print(f'╭─┴{str("".center(71, "─"))}╮')
-        print(dataframe.to_string(index=False, header=True, na_rep='  :  :  ', justify='center'))
-        print(f'╰─┬{str("".center(71, "─"))}╯')
-    elif option == '3':
-        print(f'╭─┴{str("".center(47, "─"))}╮')
-        print(f'│{str(f"Abrindo: {diretorio_atual}").center(49)}│')
-        print(f'╰{str("".center(49, "─"))}╯')
-
-        open_directory_in_file_manager(diretorio_atual)
-        break
-    elif option == '4':
-        horas_faltantes_8h()
-    elif option == '5':
-        calcular_total_horas(data_atual)
-    elif option == '6':
-         # Obter a data especifica
-        while True:
-            print(f'  │')
-            data_atual_string = input("  ├──╼ Data (MM/AAAA): ")
-            try:
-                data_especifica = datetime.strptime("01/" + data_atual_string, "%d/%m/%Y").date()
-                break
-            except ValueError:
-                print("  ├──╼ Formato de data inválido. Certifique-se de usar o formato MM/AAAA.")
-        calcular_total_horas(data_especifica)
+    if option in options_functions:
+        options_functions[option]()
     elif option.isdigit() and len(option) == 2:
-        fetch_day(option)
+        option_day(option)
     elif option.isdigit() and len(option) == 4:
-        diretorio_espc_ano = f'{diretorio_anos}/{option}'
-
-        print(f'╭─┴{str("".center(47, "─"))}╮')
-        print(f'│{str(f"Abrindo: {diretorio_espc_ano}").center(49)}│')
-        if os.path.isdir(diretorio_espc_ano):
-            open_directory_in_file_manager(diretorio_espc_ano)
-            print(f'╰──{str("".center(47, "─"))}╯')
-            break
-
-        print(f'│{str(f"Pasta não existe: {diretorio_espc_ano}").center(49)}│')
-        print(f'╰─┬{str("".center(47, "─"))}╯')
+        option_year(option)
     else:
         pass
 
