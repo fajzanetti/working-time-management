@@ -2,6 +2,19 @@
 
 Este é um programa Python simples para automatizar o registro de pontos de entrada e saída ao longo do dia. Ele cria um arquivo CSV que registra os horários de entrada e saída em intervalos regulares durante o dia. Ele consiste em vários scripts e componentes que trabalham juntos para fornecer funcionalidades específicas.
 
+<table>
+  <tr>
+    <td align="center"><img src=".img/index.png" alt="Imagem 1" width="100%"></td>
+    <td align="center"><img src=".img/menu.png" alt="Imagem 2" width="100%"></td>
+    <td align="center"><img src=".img/exemplo.png" alt="Imagem 3" width="100%"></td>
+  </tr>
+  <tr>
+    <td align="center">Home</td>
+    <td align="center">Pesquisar Ponto</td>
+    <td align="center">Funcionalidades</td>
+  </tr>
+</table>
+
 ## Índice
 
 - [Requisitos](#requisitos)
