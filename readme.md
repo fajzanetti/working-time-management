@@ -34,6 +34,8 @@ pip install python-dotenv pandas python-dateutil
 
 ```
 
+A demais bibliotecas não precisam ser instalados separadamente, pois eles fazem parte da biblioteca padrão do Python.
+
 # Clone o repositório
 
 ```bash
