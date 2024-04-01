@@ -129,6 +129,10 @@ def calcular_total_horas(data_atual):
         except FileNotFoundError:
             arquivo_não_encontrado = True
             print(f'│{str(f"✘ Arquivo {nome_arquivo} não encontrado.".center(49))}│')
+
+        except ValueError:
+            arquivo_não_encontrado = True
+            print(f'│{str(f"✘ Arquivo {nome_arquivo} incompleto.".center(49))}│')
     
     # Exemplo de uso
     total = total_horas
