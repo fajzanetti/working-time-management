@@ -5,6 +5,7 @@
 
 import os
 import csv
+import calendar
 import subprocess
 import pandas as pd
 
@@ -18,11 +19,21 @@ from dateutil.relativedelta import relativedelta
 # ! ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 
 # * Carrega as variáveis de ambiente do arquivo .env
-load_dotenv()
+load_dotenv(override=True)
 
 NOME_DIRETORIO_RAIZ = str(os.getenv('NOME_DIRETORIO_RAIZ'))
-FIRST_WORKING_DAY_OF_THE_MONTH = int(os.getenv('FIRST_WORKING_DAY_OF_THE_MONTH'))
-LAST_WORKING_DAY_OF_THE_MONTH = int(os.getenv('LAST_WORKING_DAY_OF_THE_MONTH'))
+
+# Obter a data atual
+data_atual = datetime.today()
+
+# Verificar e definir os dias de trabalho
+first_working_day = os.getenv('FIRST_WORKING_DAY_OF_THE_MONTH')
+last_working_day = os.getenv('LAST_WORKING_DAY_OF_THE_MONTH')
+
+# Se as variáveis estiverem vazias, usar valores padrão
+FIRST_WORKING_DAY_OF_THE_MONTH = int(first_working_day) if first_working_day else 1  # Primeiro dia do mês
+LAST_WORKING_DAY_OF_THE_MONTH = int(last_working_day) if last_working_day else calendar.monthrange(data_atual.year, data_atual.month)[1]  # Último dia do mês
+
 VALUE_PER_HOUR = float(os.getenv('VALUE_PER_HOUR'))
 
 # Diretório do executavel
@@ -87,89 +98,74 @@ def calcular_total_horas(data_atual):
     arquivo_não_encontrado = False
     total_horas = timedelta()
 
-    if data_atual.day > FIRST_WORKING_DAY_OF_THE_MONTH:
-        data_atual = data_atual + relativedelta(months=1)
-
+    # Definir o ano e o mês atual
     ano_atual = data_atual.year
     mes_atual = data_atual.month
 
-    # Definir o intervalo de datas a serem consideradas
-    data_inicio_mes_anterior = data_atual.replace(day=LAST_WORKING_DAY_OF_THE_MONTH)
-    
-    if data_inicio_mes_anterior.day > FIRST_WORKING_DAY_OF_THE_MONTH:
-        if mes_atual == 1:  # Se for janeiro, volta para dezembro do ano anterior
-            mes_anterior = 12
-            ano_anterior = ano_atual - 1
-        else:
-            mes_anterior = mes_atual - 1
-            ano_anterior = ano_atual
-        data_inicio_mes_anterior = data_inicio_mes_anterior.replace(year=ano_anterior, month=mes_anterior)
-    
-    data_inicio_mes_atual = data_atual.replace(day=1)
-    
-    # Loop para percorrer os arquivos CSV
-    for data_inicio in [data_inicio_mes_anterior, data_inicio_mes_atual]:
-        nome_arquivo = f'{NOME_DIRETORIO_RAIZ}/{data_inicio.year}/{data_inicio.month}.csv'
-        
-        try:
-            with open(nome_arquivo, 'r') as arquivo:
-                reader = csv.reader(arquivo)
-                next(reader)  # Ignorar a linha de cabeçalho
-                
-                for linha in reader:
-                    dia = int(linha[0])
-                    if data_inicio == data_inicio_mes_anterior and dia < LAST_WORKING_DAY_OF_THE_MONTH:  # Ignorar dias menores que {LAST_WORKING_DAY_OF_THE_MONTH} do mês anterior
-                        continue
-                    if data_inicio == data_inicio_mes_atual and dia > FIRST_WORKING_DAY_OF_THE_MONTH:  # Ignorar dias maiores que {FIRST_WORKING_DAY_OF_THE_MONTH} do mês atual
-                        continue
-                    
-                    total_dia = datetime.strptime(linha[-1], '%H:%M:%S')
-                    total_horas += timedelta(hours=total_dia.hour, minutes=total_dia.minute, seconds=total_dia.second)
-            
-        except FileNotFoundError:
-            arquivo_não_encontrado = True
-            print(f'│{str(f"✘ Arquivo {nome_arquivo} não encontrado.".center(49))}│')
+    # Nome do arquivo CSV do mês atual
+    nome_arquivo = f'{NOME_DIRETORIO_RAIZ}/{ano_atual}/{mes_atual}.csv'
 
-        except ValueError:
-            arquivo_não_encontrado = True
-            print(f'│{str(f"✘ Arquivo {nome_arquivo} incompleto.".center(49))}│')
-    
-    # Exemplo de uso
-    total = total_horas
-    total_em_horas = total.total_seconds() / 3600
+    try:
+        with open(nome_arquivo, 'r') as arquivo:
+            reader = csv.reader(arquivo)
+            next(reader)  # Ignorar o cabeçalho
+
+            # Loop para processar as linhas do arquivo
+            for linha in reader:
+                # Verifica se a última coluna (Total do dia) está preenchida
+                if len(linha) > 0 and linha[-1] != '':
+                    try:
+                        # Parse da coluna "Total do dia" no formato HH:MM:SS
+                        total_dia = datetime.strptime(linha[-1], '%H:%M:%S')
+                        total_horas += timedelta(hours=total_dia.hour, minutes=total_dia.minute, seconds=total_dia.second)
+                    except ValueError:
+                        print(f'Erro ao processar a linha: {linha}')
+                else:
+                    print(f'Linha incompleta ignorada: {linha}')
+
+    except FileNotFoundError:
+        arquivo_não_encontrado = True
+        print(f'│{str(f"✘ Arquivo {nome_arquivo} não encontrado.".center(49))}│')
+
+    # Converte o total de horas trabalhadas em horas decimais
+    total_em_horas = total_horas.total_seconds() / 3600
     total_em_horas = round(total_em_horas, 2)
     total_a_receber = total_em_horas * VALUE_PER_HOUR
 
-    if(total_em_horas == 0):
+    if total_em_horas == 0:
         print(f'╰─┬{str("".center(47, "─"))}╯')
         return
 
-    if(arquivo_não_encontrado):
+    if arquivo_não_encontrado:
         print(f'│{str("".center(49))}│')
 
-    # Exibir a quantidade total de horas como número decimal
+    # Exibir o total de horas calculado como número decimal
     print(f'│{str("".center(32))}╭─────────────╮  │')
     print(f'│{str(f" Total de horas  ╾".ljust(32, "─"))}┾ {str(f"{total_em_horas:.2f} Hrs").ljust(11)} │  │')
     print(f'│{str("".center(32))}├─────────────┤  │')
-    if(total_em_horas < 160):
+
+    # Se as horas totais forem menores que 160, exibir as horas faltantes
+    if total_em_horas < 160:
         total_horas_faltante = 160 - total_em_horas
-        print(f'│{str(f" Carga horaria restante ╾".ljust(32, "─"))}┾ {str(f"{total_horas_faltante:.2f} Hrs").ljust(11)} │  │')
+        print(f'│{str(f" Carga horária restante ╾".ljust(32, "─"))}┾ {str(f"{total_horas_faltante:.2f} Hrs").ljust(11)} │  │')
         print(f'│{str("".center(32))}├─────────────┤  │')
 
+    # Exibir o valor total a receber
     print(f'│{str(f" Total aproximado a receber ╾".ljust(32, "─"))}┾ {str(f"R$: {total_a_receber:.2f}").ljust(11)} │  │')
     print(f'│{str("".center(32))}╰─────────────╯  │')
 
     # Exibir a quantidade total de horas no formato dias, horas e minutos
-    dias = total.days
-    horas, resto = divmod(total.seconds, 3600)
+    dias = total_horas.days
+    horas, resto = divmod(total_horas.seconds, 3600)
     minutos = resto // 60
 
     print(f'│{str("".center(49))}│')
     print(f'│{str(f" Total de horas (formato dias, horas e minutos)".center(49))}│')
     print(f'│{str(f" {dias} dia(s), {horas} hora(s) e {minutos} minuto(s)".center(49))}│')
     print(f'╰─┬{str("".center(47, "─"))}╯')
+    
+    # Enviar notificação com o total de horas trabalhadas
     send_notification(f"Total de horas: {total_em_horas:.2f} Hrs", f"No mês de {meses_extenso[mes_atual]}, {ano_atual}")
-
 # ! ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
 # ! ┃                              MENU FUNCTIONS                              ┃
 # ! ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
@@ -347,8 +343,8 @@ while True:
     print(f'┃ 2 ╉╼ Para print o {nome_arquivo}')
     print(f'┃ 3 ╉╼ Para pasta do ANO ATUAL')
     print(f'┃ 4 ╉╼ Para calcular qual horario de saida para um total de 8h')
-    print(f'┃ 5 ╉╼ Somar as horas do mês de trabalho')
-    print(f'┃ 6 ╉╼ Somar as horas do mês atual')
+    print(f'┃ 5 ╉╼ Somar as horas do mês atual')
+    print(f'┃ 6 ╉╼ Somar as horas de outro mês')
     print(f'┗━┯━┛')
     print(f'┏━┷━━━━┓')
     print(f'┃  01  ╉╼ Para print do DIA especifico no MÊS atual')

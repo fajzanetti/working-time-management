@@ -32,6 +32,7 @@ Este é um programa Python simples para automatizar o registro de pontos de entr
 - Biblioteca Python: `os`
 - Biblioteca Python: `csv`
 - Biblioteca Python: `pandas`
+- Biblioteca Python: `calendar`
 - Biblioteca Python: `datetime`
 - Biblioteca Python: `subprocess`
 - Biblioteca Python: `load_dotenv`
@@ -72,7 +73,11 @@ git clone https://github.com/fajzanetti/working-time-management.git
 
    - **FIRST_WORKING_DAY_OF_THE_MONTH**: Escolha o primeiro dia do mês para contabilizar as horas. Exemplo: **FIRST_WORKING_DAY_OF_THE_MONTH=01**
 
-     - **LAST_WORKING_DAY_OF_THE_MONTH**: Escolha o último dia do mês para contabilizar as horas. Exemplo: **LAST_WORKING_DAY_OF_THE_MONTH=30**
+     - **OBS:** Caso não definido, será setado para o primeiro dia do mês.
+
+   - **LAST_WORKING_DAY_OF_THE_MONTH**: Escolha o último dia do mês para contabilizar as horas. Exemplo: **LAST_WORKING_DAY_OF_THE_MONTH=30**
+
+     - **OBS:** Caso não definido, será setado para o ultimo dia do mês.
 
 4. Salve o arquivo .env após configurar as variáveis de ambiente.
 
