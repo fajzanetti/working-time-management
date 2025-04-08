@@ -8,7 +8,7 @@ total_horas = 0
 total_minutos = 0
 
 for hora in horas:
-    if hora == '0s':
+    if hora == '':
         continue
 
     if 'h' in hora and 'min' in hora:
